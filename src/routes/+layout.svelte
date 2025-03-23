@@ -1,6 +1,26 @@
 <script lang="ts">
 	import '../app.css';
-	let { children } = $props();
+	import Header from '$lib/components/Header.svelte';
 </script>
 
-{@render children()}
+<div class="app">
+	<Header />
+	<main>
+		<div class="container">
+			<slot />
+		</div>
+	</main>
+</div>
+
+<style>
+	.app {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
+
+	main {
+		flex: 1;
+		padding: 20px 0;
+	}
+</style>
