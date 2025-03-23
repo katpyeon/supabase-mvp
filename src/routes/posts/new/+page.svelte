@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { createPost } from '$lib/api/posts';
-  import { getCurrentUser, signInWithGithub } from '$lib/api/auth';
+  import { getCurrentUser, signInWithGithub, getUserDisplayName } from '$lib/api/auth';
 
   let title = '';
   let content = '';
@@ -19,6 +19,9 @@
         // 현재 페이지 URL을 리디렉션 URL로 저장
         const returnUrl = '/posts/new';
         goto(`/auth/login?returnUrl=${returnUrl}`);
+      } else {
+        // 사용자 이름으로 작성자 필드를 자동 설정
+        author = getUserDisplayName(currentUser);
       }
     } catch (e) {
       console.error('인증 에러:', e);
@@ -80,8 +83,9 @@
         type="text"
         bind:value={author}
         placeholder="익명"
-        disabled={isLoading}
+        disabled={true}
       />
+      <small class="form-text">GitHub 계정 이름이 자동으로 사용됩니다.</small>
     </div>
 
     <div class="form-group">
@@ -132,6 +136,12 @@
 
   .form-group label {
     font-weight: 500;
+  }
+
+  .form-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
   }
 
   textarea {

@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { getPost, updatePost } from '$lib/api/posts';
-  import { getCurrentUser, signInWithGithub } from '$lib/api/auth';
+  import { getCurrentUser, signInWithGithub, getUserDisplayName } from '$lib/api/auth';
 
   let post = null;
   let title = '';
@@ -111,8 +111,9 @@
           type="text"
           bind:value={author}
           placeholder="익명"
-          disabled={isLoading}
+          disabled={true}
         />
+        <small class="form-text">작성자 이름은 변경할 수 없습니다.</small>
       </div>
 
       <div class="form-group">
@@ -169,6 +170,12 @@
 
   .form-group label {
     font-weight: 500;
+  }
+
+  .form-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
   }
 
   textarea {
