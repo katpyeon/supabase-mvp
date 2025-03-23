@@ -19,6 +19,30 @@
   
   // 이벤트 핸들러
   export let onSubmit = () => {};
+
+  // 최대 글자수 제한
+  const MAX_TITLE_LENGTH = 100; // 한국어 블로그 표준 제목 최대 글자수
+  const MAX_CONTENT_LENGTH = 10000; // 한국어 블로그 표준 본문 최대 글자수
+
+  // 남은 글자수 계산
+  $: titleLength = title ? title.length : 0;
+  $: contentLength = content ? content.length : 0;
+  $: titleRemaining = MAX_TITLE_LENGTH - titleLength;
+  $: contentRemaining = MAX_CONTENT_LENGTH - contentLength;
+  
+  // 글자수 초과 여부
+  $: isTitleOverLimit = titleLength > MAX_TITLE_LENGTH;
+  $: isContentOverLimit = contentLength > MAX_CONTENT_LENGTH;
+  
+  // 폼 제출 전 유효성 검사
+  function handleSubmit() {
+    if (isTitleOverLimit || isContentOverLimit) {
+      error = '글자수 제한을 초과하였습니다. 제목은 100자, 본문은 10,000자 이내로 작성해주세요.';
+      return;
+    }
+    error = '';
+    onSubmit();
+  }
 </script>
 
 <div class="post-form-container">
@@ -29,7 +53,7 @@
   {#if isLoading && !title && !content}
     <LoadingSpinner />
   {:else}
-    <form on:submit|preventDefault={onSubmit} class="post-form">
+    <form on:submit|preventDefault={handleSubmit} class="post-form">
       <div class="form-group">
         <label for="title">제목</label>
         <input
@@ -38,7 +62,12 @@
           bind:value={title}
           required
           disabled={isLoading}
+          class:over-limit={isTitleOverLimit}
+          maxlength={MAX_TITLE_LENGTH + 10} 
         />
+        <div class="char-counter {isTitleOverLimit ? 'over-limit' : ''}">
+          {titleLength}/{MAX_TITLE_LENGTH}자
+        </div>
       </div>
 
       <div class="form-group">
@@ -61,12 +90,17 @@
           rows="15"
           required
           disabled={isLoading}
+          class:over-limit={isContentOverLimit}
+          maxlength={MAX_CONTENT_LENGTH + 100}
         ></textarea>
+        <div class="char-counter {isContentOverLimit ? 'over-limit' : ''}">
+          {contentLength}/{MAX_CONTENT_LENGTH}자
+        </div>
       </div>
 
       <div class="form-actions">
         <a href={cancelUrl} class="cancel-button">취소</a>
-        <button type="submit" class="submit-button" disabled={isLoading}>
+        <button type="submit" class="submit-button" disabled={isLoading || isTitleOverLimit || isContentOverLimit}>
           {#if isLoading}
             <LoadingSpinner useContainer={false} />
           {:else}
@@ -115,6 +149,22 @@
     min-height: var(--spacing-16);
     font-family: inherit;
     line-height: 1.5;
+  }
+  
+  input.over-limit, textarea.over-limit {
+    border-color: #dc3545;
+  }
+
+  .char-counter {
+    font-size: var(--font-size-xs);
+    text-align: right;
+    color: #666;
+    margin-top: var(--spacing-1);
+  }
+  
+  .char-counter.over-limit {
+    color: #dc3545;
+    font-weight: bold;
   }
 
   .form-actions {
