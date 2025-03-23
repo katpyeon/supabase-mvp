@@ -196,12 +196,34 @@ npm install @supabase/supabase-js
 
 ### 환경 변수 설정
 
-`.env` 파일 생성:
+프로젝트 실행을 위해서는 Supabase 프로젝트의 URL과 Anonymous Key가 필요합니다.
 
-```
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+1. 프로젝트 루트 디렉토리에 `.env` 파일을 생성합니다:
+   ```bash
+   touch .env
+   ```
+
+2. 다음 내용으로 `.env` 파일을 채웁니다:
+   ```
+   PUBLIC_SUPABASE_URL=your_supabase_url
+   PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+3. Supabase 프로젝트 대시보드에서 설정 값을 찾는 방법:
+   - Supabase 대시보드에 로그인
+   - 해당 프로젝트 선택
+   - 왼쪽 메뉴에서 "Project Settings" 클릭
+   - "API" 탭 선택
+   - "Project URL"과 "anon/public" 키를 각각 복사하여 `.env` 파일에 붙여넣기
+
+4. 주의사항: `.env` 파일은 보안을 위해 `.gitignore`에 이미 포함되어 있어 Git 저장소에 커밋되지 않습니다. 프로젝트를 공유할 때 실제 키 값을 포함하지 않도록 주의하세요.
+
+5. 또는 `.env.example` 파일을 만들어 필요한 환경 변수 형식만 공유할 수 있습니다:
+   ```bash
+   # .env.example
+   PUBLIC_SUPABASE_URL=your_supabase_project_url
+   PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
 ### Supabase 클라이언트 설정
 
@@ -210,8 +232,8 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```typescript
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 ```
