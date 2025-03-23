@@ -99,6 +99,8 @@ SvelteKit과 Supabase를 사용한 블로그 MVP 애플리케이션입니다. �
 
 ## Supabase 설정
 
+Supabase는 웹 콘솔(https://supabase.com/dashboard)을 통해 직관적인 UI로 모든 설정을 쉽게 구성할 수 있습니다. 아래 설정은 모두 슈파베이스 대시보드에서 마우스 클릭과 SQL 에디터를 통해 진행할 수 있습니다.
+
 ### 데이터베이스 스키마
 
 프로젝트는 다음과 같은 데이터베이스 스키마를 사용합니다:
