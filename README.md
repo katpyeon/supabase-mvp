@@ -227,9 +227,10 @@ npm install @supabase/supabase-js
 
 ### Supabase 클라이언트 설정
 
-`src/lib/supabase.ts` 파일 생성:
+이 프로젝트는 이미 Supabase 클라이언트가 `src/lib/supabase.ts`에 구성되어 있습니다. 환경 변수를 올바르게 설정하면 자동으로 연결됩니다.
 
 ```typescript
+// 이미 구현되어 있는 src/lib/supabase.ts (참고용)
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL
