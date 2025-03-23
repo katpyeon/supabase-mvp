@@ -1,21 +1,25 @@
 # Supabase MVP
 
-SvelteKit과 Supabase를 사용한 포스트 관리 애플리케이션입니다. 깃허브 OAuth 로그인을 통해 사용자 인증을 처리합니다.
+SvelteKit과 Supabase를 사용한 블로그 MVP 애플리케이션입니다. 깃허브 OAuth 로그인을 통해 사용자 인증을 처리하며, 일관된 디자인 시스템을 구현하여 사용자 경험을 향상시켰습니다.
 
-## 주요 기능
+## 프로젝트 설명
 
-- 포스트 목록 조회
+이 프로젝트는 현대적인 웹 기술을 활용한 블로그 MVP(Minimum Viable Product)입니다. 백엔드는 Supabase를 사용하여 데이터베이스, 인증, 저장소 기능을 구현했으며, 프론트엔드는 SvelteKit을 활용하여 빠르고 효율적인 사용자 인터페이스를 구현했습니다.
+
+### 주요 기능
+
+- 포스트 목록 조회 및 검색
 - 포스트 상세 보기
 - 포스트 작성/수정/삭제 (인증된 사용자만)
-- 포스트 검색
 - GitHub OAuth 로그인
+- 실시간 글자수 체크 (제목 최대 100자, 본문 최대 10,000자)
 
-## 기술 스택
+### 기술 스택
 
 - **프론트엔드**: SvelteKit 5
 - **백엔드**: Supabase
 - **인증**: Supabase Auth (GitHub OAuth)
-- **스타일링**: 순수 CSS (Tailwind CSS 제거됨)
+- **스타일링**: 순수 CSS + 디자인 시스템
 - **언어**: TypeScript
 
 ## 디자인 시스템
@@ -93,6 +97,123 @@ SvelteKit과 Supabase를 사용한 포스트 관리 애플리케이션입니다.
 - **접근성**: 상대적 단위를 사용하여 사용자 설정에 더 잘 대응합니다
 - **개발 효율성**: 개발자가 매번 값을 결정할 필요 없이 미리 정의된 값을 사용할 수 있습니다
 
+## Supabase 설정
+
+### 데이터베이스 스키마
+
+프로젝트는 다음과 같은 데이터베이스 스키마를 사용합니다:
+
+```typescript
+// post.ts
+export interface Post {
+  id: string;        // 포스트 고유 ID
+  title: string;     // 포스트 제목 (최대 100자)
+  content: string;   // 포스트 본문 (최대 10,000자)
+  author?: string;   // 작성자 이름
+  created_at: string; // 생성 날짜/시간
+  user_id?: string;  // 작성자 사용자 ID (GitHub 사용자 ID)
+}
+```
+
+### SQL 테이블 생성
+
+Supabase에서 다음 SQL을 실행하여 posts 테이블을 생성합니다:
+
+```sql
+CREATE TABLE posts (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL CHECK (char_length(title) <= 100),
+  content TEXT NOT NULL CHECK (char_length(content) <= 10000),
+  author TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  user_id UUID REFERENCES auth.users(id),
+  CONSTRAINT title_length CHECK (char_length(title) <= 100),
+  CONSTRAINT content_length CHECK (char_length(content) <= 10000)
+);
+```
+
+### Row Level Security (RLS) 설정
+
+Supabase에서 다음과 같은 RLS 정책을 설정하여 보안을 구현합니다:
+
+1. **읽기 권한 (모든 사용자)**
+```sql
+CREATE POLICY "모든 사용자가 포스트를 읽을 수 있음" ON posts
+  FOR SELECT USING (true);
+```
+
+2. **쓰기 권한 (인증된 사용자만)**
+```sql
+CREATE POLICY "인증된 사용자만 포스트를 생성할 수 있음" ON posts
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+```
+
+3. **수정 권한 (본인 포스트만)**
+```sql
+CREATE POLICY "사용자는 자신의 포스트만 수정할 수 있음" ON posts
+  FOR UPDATE USING (auth.uid() = user_id);
+```
+
+4. **삭제 권한 (본인 포스트만)**
+```sql
+CREATE POLICY "사용자는 자신의 포스트만 삭제할 수 있음" ON posts
+  FOR DELETE USING (auth.uid() = user_id);
+```
+
+### GitHub OAuth 인증 설정
+
+1. GitHub 개발자 설정에서 OAuth 앱 등록:
+   - Settings > Developer settings > OAuth Apps > New OAuth App
+   - Application name: Supabase MVP Blog
+   - Homepage URL: 배포된 사이트 URL 또는 로컬 개발 URL
+   - Authorization callback URL: `https://<project-ref>.supabase.co/auth/v1/callback`
+
+2. Supabase 인증 설정:
+   - Supabase 대시보드에서 Authentication > Providers로 이동
+   - GitHub provider 활성화
+   - Client ID와 Client Secret 입력 (GitHub에서 생성한 값)
+   - Site URL과 Redirect URL 설정
+
+## SvelteKit 프로젝트 생성
+
+### 프로젝트 초기화
+
+```bash
+# SvelteKit 프로젝트 생성
+npm create svelte@latest supabase-mvp
+
+# 프로젝트 디렉토리로 이동
+cd supabase-mvp
+
+# 의존성 설치
+npm install
+
+# Supabase 클라이언트 설치
+npm install @supabase/supabase-js
+```
+
+### 환경 변수 설정
+
+`.env` 파일 생성:
+
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Supabase 클라이언트 설정
+
+`src/lib/supabase.ts` 파일 생성:
+
+```typescript
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+```
+
 ## 설치 및 실행
 
 ### 사전 요구사항
@@ -118,19 +239,7 @@ npm install
 yarn
 ```
 
-3. `.env` 파일을 생성하고 다음 변수를 설정합니다:
-
-```
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-4. GitHub OAuth 설정:
-   - Supabase 대시보드에서 Authentication > Providers로 이동
-   - GitHub provider 활성화
-   - GitHub 개발자 설정에서 OAuth 앱 등록
-   - 리디렉션 URL 설정 (Supabase에서 제공하는 URL 사용)
-   - Client ID와 Client Secret을 Supabase 설정에 입력
+3. `.env` 파일을 생성하고 Supabase 정보를 설정합니다.
 
 ### 개발 서버 실행
 
