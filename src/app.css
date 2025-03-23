@@ -4,6 +4,40 @@
   --foreground: #000000;
   --accent: #333333;
   --border: #e5e5e5;
+  
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-base: 1rem;    /* 16px */
+  --font-size-lg: 1.25rem;   /* 20px */
+  --font-size-xl: 1.5rem;    /* 24px */
+  --font-size-2xl: 1.75rem;  /* 28px */
+  --font-size-3xl: 2rem;     /* 32px */
+  
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;      /* 4px */
+  --spacing-2: 0.5rem;       /* 8px */
+  --spacing-3: 0.75rem;      /* 12px */
+  --spacing-4: 1rem;         /* 16px */
+  --spacing-5: 1.25rem;      /* 20px */
+  --spacing-6: 1.5rem;       /* 24px */
+  --spacing-8: 2rem;         /* 32px */
+  --spacing-10: 2.5rem;      /* 40px */
+  --spacing-12: 3rem;        /* 48px */
+  --spacing-16: 4rem;        /* 64px */
+}
+
+/* 모바일 화면 */
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px; /* 기본 폰트 사이즈 조정 */
+  }
+}
+
+/* 대형 화면 */
+@media (min-width: 1440px) {
+  :root {
+    font-size: 18px;
+  }
 }
 
 * {
@@ -12,11 +46,16 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px; /* 기본 루트 폰트 사이즈 */
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--background);
   color: var(--foreground);
   line-height: 1.5;
+  font-size: var(--font-size-base);
 }
 
 a {
@@ -33,9 +72,9 @@ button {
   background-color: var(--foreground);
   color: var(--background);
   border: none;
-  padding: 8px 16px;
+  padding: var(--spacing-2) var(--spacing-4);
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 button:hover {
@@ -43,39 +82,39 @@ button:hover {
 }
 
 input, textarea {
-  padding: 8px 12px;
+  padding: var(--spacing-2) var(--spacing-3);
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   width: 100%;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--spacing-5);
 }
 
 .card {
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
   background-color: var(--background);
 }
 
 .error {
   background-color: #ffebee;
   color: #c62828;
-  padding: 8px 12px;
+  padding: var(--spacing-2) var(--spacing-3);
   border-radius: 4px;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-4);
 }
 
 .loading {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: var(--spacing-5);
+  height: var(--spacing-5);
   border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
   border-top-color: var(--foreground);

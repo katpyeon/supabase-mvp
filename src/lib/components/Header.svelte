@@ -1,14 +1,19 @@
 <script>
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { getCurrentUser, signOut } from '$lib/api/auth';
+  import { getCurrentUser, signOut, getUserDisplayName } from '$lib/api/auth';
+  import LoadingSpinner from './LoadingSpinner.svelte';
 
   let currentUser = null;
   let isLoading = true;
+  let userName = '';
 
   onMount(async () => {
     try {
       currentUser = await getCurrentUser();
+      if (currentUser) {
+        userName = getUserDisplayName(currentUser);
+      }
     } catch (e) {
       console.error('사용자 정보 로드 에러:', e);
     } finally {
@@ -38,9 +43,9 @@
     </div>
     <div class="nav-buttons">
       {#if isLoading}
-        <div class="loading"></div>
+        <LoadingSpinner useContainer={false} />
       {:else if currentUser}
-        <span class="user-email">{currentUser.email}</span>
+        <span class="user-name">{userName}</span>
         <button on:click={handleSignOut}>로그아웃</button>
       {:else}
         <button on:click={goToLogin}>로그인</button>
@@ -62,11 +67,11 @@
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 16px 20px;
+    padding: var(--spacing-4) var(--spacing-5);
   }
 
   .logo a {
-    font-size: 24px;
+    font-size: var(--font-size-xl);
     font-weight: bold;
     color: var(--foreground);
     text-decoration: none;
@@ -75,10 +80,11 @@
   .nav-buttons {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--spacing-4);
   }
 
-  .user-email {
-    font-size: 14px;
+  .user-name {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
   }
 </style> 

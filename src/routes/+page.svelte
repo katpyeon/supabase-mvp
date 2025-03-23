@@ -2,11 +2,14 @@
   import { onMount } from 'svelte';
   import { getPosts, searchPosts } from '$lib/api/posts';
   import { getCurrentUser } from '$lib/api/auth';
+  import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+  import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+  import PostCard from '$lib/components/PostCard.svelte';
 
   let posts = [];
   let searchQuery = '';
   let isLoading = false;
-  let error = null;
+  let error = '';
   let currentUser = null;
 
   onMount(async () => {
@@ -23,7 +26,7 @@
   async function loadPosts() {
     try {
       isLoading = true;
-      error = null;
+      error = '';
       posts = await getPosts();
     } catch (e) {
       error = '포스트를 불러오는데 실패했습니다.';
@@ -41,7 +44,7 @@
 
     try {
       isLoading = true;
-      error = null;
+      error = '';
       posts = await searchPosts(searchQuery);
     } catch (e) {
       error = '검색에 실패했습니다.';
@@ -78,14 +81,10 @@
     <button on:click={resetSearch} class="reset-button">목록</button>
   </div>
 
-  {#if error}
-    <div class="error">{error}</div>
-  {/if}
+  <ErrorDisplay message={error} />
 
   {#if isLoading}
-    <div class="loading-container">
-      <div class="loading"></div>
-    </div>
+    <LoadingSpinner />
   {:else if posts.length === 0}
     <div class="empty-message">
       {searchQuery ? '검색 결과가 없습니다.' : '등록된 포스트가 없습니다.'}
@@ -93,16 +92,7 @@
   {:else}
     <div class="posts-grid">
       {#each posts as post (post.id)}
-        <article class="post-card">
-          <h2 class="post-title">
-            <a href="/posts/{post.id}">{post.title}</a>
-          </h2>
-          <p class="post-excerpt">{post.content?.substring(0, 100)}...</p>
-          <div class="post-meta">
-            <span class="post-author">작성자: {post.author || '익명'}</span>
-            <span class="post-date">작성일: {new Date(post.created_at).toLocaleDateString()}</span>
-          </div>
-        </article>
+        <PostCard {post} />
       {/each}
     </div>
   {/if}
@@ -113,22 +103,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-5);
   }
 
   .create-button {
     display: inline-block;
     background-color: var(--foreground);
     color: var(--background);
-    padding: 8px 16px;
-    border-radius: 4px;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--spacing-1);
     text-decoration: none;
   }
 
   .search-box {
     display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-5);
   }
 
   .search-button {
@@ -146,71 +136,34 @@
     background-color: #f5f5f5;
   }
 
-  .loading-container {
-    text-align: center;
-    padding: 32px;
-  }
-
   .posts-section {
-    margin-top: 20px;
+    margin-top: var(--spacing-5);
   }
 
   .page-title {
-    font-size: 28px;
+    font-size: var(--font-size-2xl);
     margin: 0;
   }
 
   .empty-message {
     text-align: center;
-    padding: 32px;
+    padding: var(--spacing-8);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--spacing-2);
   }
 
   .posts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 24px;
-  }
-
-  .post-card {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-
-  .post-title {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-
-  .post-title a {
-    color: var(--foreground);
-    text-decoration: none;
-  }
-
-  .post-title a:hover {
-    text-decoration: underline;
-  }
-
-  .post-excerpt {
-    color: #555;
-    margin-bottom: 16px;
-    line-height: 1.5;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: var(--spacing-6);
   }
 
   .post-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
-    font-size: 14px;
+    gap: var(--spacing-4);
+    font-size: var(--font-size-sm);
     color: #777;
-    margin-bottom: 16px;
+    margin-bottom: var(--spacing-4);
   }
 </style>

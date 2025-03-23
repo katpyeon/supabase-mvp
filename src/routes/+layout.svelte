@@ -31,11 +31,11 @@
 
 	main {
 		flex: 1;
-		padding: 20px 0;
+		padding: var(--spacing-5) 0;
 	}
 
 	.footer {
-		padding: 20px 0;
+		padding: var(--spacing-5) 0;
 		background-color: var(--background);
 		border-top: 1px solid var(--border);
 		margin-top: auto;
@@ -44,16 +44,16 @@
 	.footer-container {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 0 20px;
+		padding: 0 var(--spacing-5);
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
 		align-items: center;
-		gap: 10px;
+		gap: var(--spacing-2);
 	}
 
 	.copyright, .contact {
-		font-size: 14px;
+		font-size: var(--font-size-sm);
 		color: #666;
 	}
 
