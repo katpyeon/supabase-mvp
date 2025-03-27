@@ -1,10 +1,11 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { getCurrentUser, signOut, getUserDisplayName } from '$lib/api/auth';
   import LoadingSpinner from './LoadingSpinner.svelte';
+  import type { User } from '@supabase/supabase-js';
 
-  let currentUser = null;
+  let currentUser: User | null = null;
   let isLoading = true;
   let userName = '';
 

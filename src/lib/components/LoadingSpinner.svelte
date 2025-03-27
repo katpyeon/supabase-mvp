@@ -1,6 +1,6 @@
-<script>
-  // 컨테이너 사용 여부 (기본값: true)
-  export let useContainer = true;
+<script lang="ts">
+  // 컨테이너 사용 여부 (기본값: false)
+  export let useContainer: boolean = false;
 </script>
 
 {#if useContainer}
