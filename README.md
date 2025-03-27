@@ -303,3 +303,40 @@ npm run test
 # 또는
 yarn test
 ```
+
+## Edge Functions REST API 통합
+
+프로젝트는 Supabase Edge Functions를 사용하여 REST API를 구현했습니다. 기존의 Supabase 클라이언트 라이브러리와 함께 REST API 방식도 지원합니다.
+
+### Edge Functions API 클라이언트
+
+`src/lib/api/edge-functions.ts`에서 REST API 클라이언트를 구현했습니다:
+
+```typescript
+// Edge Functions API 엔드포인트
+const EDGE_FUNCTION_URL = `${PUBLIC_SUPABASE_URL}/functions/v1`;
+
+// 포스트 관련 API
+export async function getPostsFromEdge(): Promise<any[]>
+export async function getPostFromEdge(id: string): Promise<any>
+export async function createPostFromEdge(post: any): Promise<any>
+export async function updatePostFromEdge(id: string, updates: any): Promise<any>
+export async function deletePostFromEdge(id: string): Promise<boolean>
+```
+
+### API 통합 방식
+
+1. **기존 API와 통합**
+   - `src/lib/api/posts.ts`에서 Edge Functions API를 사용하도록 수정
+   - 기존 인터페이스는 유지하면서 내부 구현만 변경
+
+2. **인증 처리**
+   - JWT 토큰을 사용한 인증
+   - Edge Functions에서 service_role_key를 사용하여 RLS 정책 우회
+
+3. **에러 처리**
+   - 상세한 에러 메시지 제공
+   - HTTP 상태 코드에 따른 적절한 에러 처리
+
+### Edge Functions 서버 프로젝트
+- https://github.com/katpyeon/supabase-mvp-api.git
